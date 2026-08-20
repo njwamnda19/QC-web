@@ -1,0 +1,11 @@
+/* Import 3 layer inti Tailwind: base (reset), components, utilities (class bg-*, p-*, dst) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sedikit reset tambahan agar tampilan konsisten di semua browser */
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-color: #f4f5f7; /* abu-abu sangat muda, sesuai background dashboard */
+}

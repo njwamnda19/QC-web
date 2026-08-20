@@ -1,0 +1,25 @@
+project/
+│
+├── client/                 # React + Tailwind
+│   ├── src/
+│   │   ├── pages/
+│   │   │   └── Login.jsx
+│   │   ├── services/
+│   │   │   └── authService.js
+│   │   └── App.jsx
+│   └── package.json
+│
+└── server/                 # Express API
+    ├── controllers/
+    │   └── authController.js
+    ├── routes/
+    │   └── authRoutes.js
+    ├── middleware/
+    │   └── authMiddleware.js
+    ├── config/
+    │   └── db.js
+    ├── models/
+    │   └── User.js
+    ├── .env
+    ├── server.js
+    └── package.json
