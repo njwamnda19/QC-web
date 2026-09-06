@@ -161,21 +161,50 @@ export default function QC () {
           </div>
 
           {/* ===== Evaluation Criteria ===== */}
+          <h2 className="text-sm font-bold text-gray-700 mb-1">CORE FACTOR</h2>
           <h3 className="text-sm font-semibold text-gray-700 mb-1">Evaluation Criteria</h3>
           <p className="text-xs text-gray-400 mb-4">Rate each aspect on a scale of 1 (Poor) to 5 (Excellent).</p>
 
           <RatingScale
-            label="Structural Integrity"
-            description="Checking for cracks, deformities, or weak joints."
+            label="Program Information Accuracy"
+            description="Ensuring the accuracy of product information provided to prospective clients or students parents."
             value={form.structuralIntegrity}
             onChange={(val) => updateField("structuralIntegrity", val)}
           />
+
+          <h2 className="text-sm font-bold text-gray-700 mb-1">SECONDARY FACTOR</h2>
+          <h3 className="text-sm font-semibold text-gray-700 mb-1">Evaluation Criteria</h3>
+          <p className="text-xs text-gray-400 mb-4">Rate each aspect on a scale of 1 (Poor) to 5 (Excellent).</p>
+
           <RatingScale
-            label="Surface Finish & Color"
-            description="Consistency of coating, absence of scratches."
+            label="Response Time"
+            description="The time it takes for sales to reply to a message."
             value={form.surfaceFinish}
             onChange={(val) => updateField("surfaceFinish", val)}
           />
+
+          <RatingScale
+            label="Follow-Up Technical"
+            description="Sales methods and strategies for following up with prospects."
+            value={form.surfaceFinish}
+            onChange={(val) => updateField("surfaceFinish", val)}
+          />
+
+          <RatingScale
+            label="Emphatics & Professional Communication"
+            description="The ability of sales people to understand clients needs."
+            value={form.surfaceFinish}
+            onChange={(val) => updateField("surfaceFinish", val)}
+          />
+
+          <RatingScale
+            label="Grammar"
+            description="The use of proper, correct, and professional language in interactions."
+            value={form.surfaceFinish}
+            onChange={(val) => updateField("surfaceFinish", val)}
+          />
+
+
 
           {/* Additional Comments */}
           <div className="mb-5">

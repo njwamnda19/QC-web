@@ -12,7 +12,6 @@ import { LayoutDashboard, ClipboardCheck, Users, Plus, HelpCircle, LogOut } from
 // tidak perlu tulis <NavLink> berkali-kali secara manual.
 const menuItems = [
   { to: "/dashboard", label: "Dashboard Utama", icon: LayoutDashboard },
-  { to: "/qc", label: "QC", icon: ClipboardCheck },
   { to: "/dataSales", label: "Data Sales", icon: Users },
 ];
 
@@ -38,7 +37,9 @@ export default function Sidebar() {
 
       {/* ===== Tombol "New Audit" ===== */}
       <div className="px-4 mb-3">
-        <button className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 transition-colors text-white text-sm font-medium py-2.5 rounded-lg">
+        <button 
+        onClick={() => navigate ('/QC')}
+        className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 transition-colors text-white text-sm font-medium py-2.5 rounded-lg">
           <Plus size={16} />
           New Audit
         </button>
