@@ -1,17 +1,28 @@
 from fastapi import FastAPI
-from api.routes import sales
+from fastapi.middleware.cors import CORSMiddleware
+from api.routes import sales, qc
 
-# 1. Impor engine dan Base dari konfigurasi database-mu
 from db.database import engine, Base
-
-# 2. KRITIS: Impor model-modelmu di sini. 
-# Jika baris ini terlewat, SQLAlchemy tidak akan membuat tabel 'sales'.
 from models import sales as sales_model
+from models import qc as qc_model
 
-# 3. Eksekusi pembuatan tabel.
-# Ini akan menginstruksikan SQLite untuk membuat file dan tabel jika belum ada.
+# Buat semua tabel jika belum ada
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Qualitrack API")
+app = FastAPI(title="Qualitrack API", version="1.0.0")
+
+# CORS: izinkan frontend React (localhost:5173) mengakses API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
+app.include_router(qc.router, prefix="/api/qc", tags=["QC"])
+
+@app.get("/")
+def root():
+    return {"message": "QualiTrack API is running", "version": "1.0.0"}
