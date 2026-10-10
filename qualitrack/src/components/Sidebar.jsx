@@ -1,4 +1,4 @@
-// Sidebar.jsx — Updated dengan navigasi QC + user info
+// Sidebar.jsx — Updated: tambah menu Riwayat QC + badge count
 
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -8,24 +8,38 @@ import {
   Plus,
   HelpCircle,
   LogOut,
-  User,
+  History,
 } from "lucide-react";
 
 const menuItems = [
   { to: "/dashboard", label: "Dashboard Utama", icon: LayoutDashboard },
   { to: "/qc", label: "QC Assessment", icon: ClipboardCheck },
+  { to: "/qchistory", label: "Riwayat QC", icon: History },
   { to: "/datasales", label: "Data Sales", icon: Users },
 ];
 
 export default function Sidebar() {
   const navigate = useNavigate();
 
-  // Ambil info user dari localStorage (disimpan saat login)
   const authUser = (() => {
     try {
-      return JSON.parse(localStorage.getItem("auth_user")) || { name: "Najwa", email: "najwa@gmail.com" };
+      return (
+        JSON.parse(localStorage.getItem("auth_user")) || {
+          name: "Najwa",
+          email: "najwa@gmail.com",
+        }
+      );
     } catch {
       return { name: "Najwa", email: "najwa@gmail.com" };
+    }
+  })();
+
+  // Hitung jumlah QC record untuk badge
+  const qcCount = (() => {
+    try {
+      return (JSON.parse(localStorage.getItem("qcRecords")) || []).length;
+    } catch {
+      return 0;
     }
   })();
 
@@ -34,14 +48,18 @@ export default function Sidebar() {
     navigate("/");
   };
 
-  // Inisial avatar dari nama user
   const initials = authUser.name
-    ? authUser.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    ? authUser.name
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
     : "N";
 
   return (
     <aside className="w-60 shrink-0 bg-white border-r border-gray-200 flex flex-col h-screen sticky top-0">
-      {/* Logo & App Name */}
+      {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-100">
         <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
           Q
@@ -54,19 +72,9 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Tombol New Audit */}
-      <div className="px-4 py-3">
-        <button
-          onClick={() => navigate("/qc")}
-          className="w-full flex items-center justify-center gap-2 bg-brand-700 hover:bg-brand-800 transition-colors text-white text-sm font-medium py-2.5 rounded-lg"
-        >
-          <Plus size={15} />
-          New Audit
-        </button>
-      </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-0.5">
+      <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
         <p className="text-[10px] font-semibold text-gray-400 tracking-wider uppercase px-3 py-2">
           Menu
         </p>
@@ -89,14 +97,26 @@ export default function Sidebar() {
                   size={17}
                   className={isActive ? "text-brand-600" : "text-gray-400"}
                 />
-                {label}
+                <span className="flex-1">{label}</span>
+                {/* Badge count untuk Riwayat QC */}
+                {to === "/qchistory" && qcCount > 0 && (
+                  <span
+                    className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                      isActive
+                        ? "bg-brand-100 text-brand-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {qcCount}
+                  </span>
+                )}
               </>
             )}
           </NavLink>
         ))}
       </nav>
 
-      {/* Footer: Bantuan + User + Keluar */}
+      {/* Footer */}
       <div className="px-3 pb-4 space-y-0.5 border-t border-gray-100 pt-3">
         <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors">
           <HelpCircle size={17} className="text-gray-400" />
@@ -112,9 +132,7 @@ export default function Sidebar() {
             <p className="text-xs font-medium text-gray-700 truncate">
               {authUser.name}
             </p>
-            <p className="text-[10px] text-gray-400 truncate">
-              {authUser.email}
-            </p>
+            <p className="text-[10px] text-gray-400 truncate">{authUser.email}</p>
           </div>
         </div>
 

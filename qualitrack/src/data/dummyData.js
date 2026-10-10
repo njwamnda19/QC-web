@@ -1,8 +1,6 @@
-// File ini berisi DATA CONTOH (dummy/mock data).
-// Di aplikasi nyata, data ini biasanya diambil dari API/backend menggunakan fetch/axios.
-// Untuk sekarang kita taruh di sini dulu supaya tampilan (UI) bisa langsung dicoba.
+// dummyData.js — Extended dengan data bulanan untuk toggle chart
 
-// Data untuk 3 kartu statistik di Dashboard Utama
+// Data untuk kartu statistik Dashboard
 export const statCards = [
   {
     id: "audit",
@@ -27,7 +25,7 @@ export const statCards = [
     label: "Critical Issues",
     value: "23",
     trend: "-5 from last month",
-    trendUp: false, // turun = bagus untuk kasus "critical issues", tapi kita tetap tandai warnanya merah/hijau via ikon
+    trendUp: false,
     icon: "alert",
     iconColor: "text-red-600 bg-red-50",
   },
@@ -36,13 +34,13 @@ export const statCards = [
     label: "Active Inspectors",
     value: "45",
     trend: "Currently in field",
-    trendUp: null, // null = tidak ada panah naik/turun, cuma keterangan
+    trendUp: null,
     icon: "users",
     iconColor: "text-gray-600 bg-gray-100",
   },
 ];
 
-// Data untuk grafik batang "Ranking Performa Sales" (per tim, skala 0-100)
+// Data grafik batang "Ranking Performa Sales"
 export const rankingPerforma = [
   { tim: "Tim A", nilai: 92 },
   { tim: "Tim B", nilai: 78 },
@@ -52,23 +50,34 @@ export const rankingPerforma = [
   { tim: "Tim F", nilai: 70 },
 ];
 
-// Data untuk donut chart "Status Kualitas" (Lulus vs Revisi)
+// Data donut chart "Status Kualitas"
 export const statusKualitas = [
   { name: "Lulus", value: 60 },
   { name: "Revisi", value: 40 },
 ];
-export const STATUS_COLORS = ["#155e56", "#d9d9d9"]; // hijau tua (Lulus), abu-abu (Revisi)
+export const STATUS_COLORS = ["#155e56", "#e5e7eb"];
 
-// Data untuk area chart "Tren Inspeksi Mingguan"
-export const trenInspeksi = [
-  { hari: "Sen", jumlah: 20 },
-  { hari: "Sel", jumlah: 35 },
-  { hari: "Rab", jumlah: 28 },
-  { hari: "Kam", jumlah: 45 },
-  { hari: "Jum", jumlah: 60 },
-  { hari: "Sab", jumlah: 38 },
-  { hari: "Min", jumlah: 25 },
+// Data "Minggu Ini" — area chart harian (Sen–Min)
+export const trenInspeksiMinggu = [
+  { label: "Sen", jumlah: 20 },
+  { label: "Sel", jumlah: 35 },
+  { label: "Rab", jumlah: 28 },
+  { label: "Kam", jumlah: 45 },
+  { label: "Jum", jumlah: 60 },
+  { label: "Sab", jumlah: 38 },
+  { label: "Min", jumlah: 25 },
 ];
+
+// Data "Bulan Ini" — area chart mingguan (W1–W4)
+export const trenInspeksiBulan = [
+  { label: "W1", jumlah: 148 },
+  { label: "W2", jumlah: 212 },
+  { label: "W3", jumlah: 176 },
+  { label: "W4", jumlah: 231 },
+];
+
+// Alias untuk backward-compat (dipakai chart lama)
+export const trenInspeksi = trenInspeksiMinggu;
 
 // Data untuk tabel "Data Sales"
 export const salesData = [

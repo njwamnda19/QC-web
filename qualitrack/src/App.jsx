@@ -1,15 +1,15 @@
-// App.jsx — Updated dengan route editSales + simple protected route
+// App.jsx — Route lengkap + Protected Route
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Login from "./pages/login";
 import Dashboard from "./pages/Dashboard";
 import QC from "./pages/QC";
+import QCHistory from "./pages/QCHistory";
 import DataSales from "./pages/DataSales";
 import AddSales from "./pages/addSales";
 import EditSales from "./pages/editSales";
 
-// Protected route: redirect ke login jika belum auth
 function RequireAuth({ children }) {
   const isLoggedIn = !!localStorage.getItem("auth_user");
   if (!isLoggedIn) return <Navigate to="/" replace />;
@@ -24,10 +24,10 @@ function Layout() {
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/qc" element={<QC />} />
+          <Route path="/qchistory" element={<QCHistory />} />
           <Route path="/datasales" element={<DataSales />} />
           <Route path="/addSales" element={<AddSales />} />
           <Route path="/editSales/:id" element={<EditSales />} />
-          {/* Redirect catch-all ke dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>

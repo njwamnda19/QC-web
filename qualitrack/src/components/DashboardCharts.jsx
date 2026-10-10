@@ -1,7 +1,5 @@
 // DashboardCharts.jsx
-// Berisi 3 komponen grafik yang dipakai di Dashboard Utama.
-// Library yang dipakai: "recharts" (npm install recharts) — library chart populer untuk React,
-// karena berbasis SVG dan komponennya sangat mirip menulis JSX biasa.
+// Grafik-grafik Dashboard yang sekarang menerima data sebagai props (fully controlled).
 
 import {
   BarChart,
@@ -17,70 +15,127 @@ import {
   Area,
   CartesianGrid,
 } from "recharts";
-import { rankingPerforma, statusKualitas, STATUS_COLORS, trenInspeksi } from "../data/dummyData";
+import {
+  rankingPerforma,
+  statusKualitas,
+  STATUS_COLORS,
+} from "../data/dummyData";
+
+// Custom tooltip untuk bar chart
+function CustomBarTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-100 rounded-lg shadow-lg px-3 py-2 text-xs">
+        <p className="font-medium text-gray-700">{label}</p>
+        <p className="text-brand-700 font-semibold mt-0.5">
+          Nilai: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
+// Custom tooltip untuk area chart
+function CustomAreaTooltip({ active, payload, label }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white border border-gray-100 rounded-lg shadow-lg px-3 py-2 text-xs">
+        <p className="font-medium text-gray-700">{label}</p>
+        <p className="text-brand-700 font-semibold mt-0.5">
+          {payload[0].value} inspeksi
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
 
 // ============================================================
 // 1) BAR CHART - "Ranking Performa Sales"
+//    Sekarang bisa menerima data dari prop (untuk filter tanggal)
 // ============================================================
-export function RankingPerformaChart() {
+export function RankingPerformaChart({ data = rankingPerforma }) {
   return (
-    // ResponsiveContainer membuat chart otomatis menyesuaikan lebar parent-nya (responsive)
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={rankingPerforma}>
-        <XAxis dataKey="tim" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-        <Tooltip cursor={{ fill: "#f3f4f6" }} />
-        {/* radius={[4,4,0,0]} membuat sudut atas bar sedikit melengkung */}
-        <Bar dataKey="nilai" fill="#155e56" radius={[4, 4, 0, 0]} barSize={28} />
+      <BarChart data={data} barCategoryGap="30%">
+        <XAxis
+          dataKey="tim"
+          tick={{ fontSize: 11, fill: "#9ca3af" }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <YAxis
+          tick={{ fontSize: 11, fill: "#9ca3af" }}
+          axisLine={false}
+          tickLine={false}
+          domain={[0, 100]}
+        />
+        <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "#f3f4f6" }} />
+        <Bar dataKey="nilai" radius={[4, 4, 0, 0]} barSize={28}>
+          {data.map((entry, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.nilai >= 80 ? "#155e56" : entry.nilai >= 65 ? "#1f6b63" : "#94a3b8"}
+            />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
 }
 
 // ============================================================
-// 2) DONUT CHART - "Status Kualitas" (Lulus vs Revisi)
+// 2) DONUT CHART - "Status Kualitas"
 // ============================================================
-export function StatusKualitasChart() {
-  // Total dihitung dari data supaya angka di tengah donut selalu akurat
-  // walau datanya berubah, tidak perlu di-hardcode manual.
-  const totalLulus = statusKualitas.find((d) => d.name === "Lulus")?.value ?? 0;
+export function StatusKualitasChart({ data = statusKualitas }) {
+  const lulusEntry = data.find((d) => d.name === "Lulus");
+  const totalLulus = lulusEntry?.value ?? 0;
+  const revisiEntry = data.find((d) => d.name === "Revisi");
+  const totalRevisi = revisiEntry?.value ?? 0;
 
   return (
     <div className="relative">
       <ResponsiveContainer width="100%" height={180}>
         <PieChart>
           <Pie
-            data={statusKualitas}
+            data={data}
             dataKey="value"
             nameKey="name"
-            innerRadius={55} // ini yang membuat pie chart jadi bentuk "donut" (ada lubang tengah)
+            innerRadius={55}
             outerRadius={75}
             paddingAngle={2}
             startAngle={90}
             endAngle={-270}
           >
-            {statusKualitas.map((entry, index) => (
+            {data.map((entry, index) => (
               <Cell key={entry.name} fill={STATUS_COLORS[index % STATUS_COLORS.length]} />
             ))}
           </Pie>
         </PieChart>
       </ResponsiveContainer>
 
-      {/* Teks "100% Total" diletakkan absolute di tengah, menumpuk di atas donut */}
+      {/* Angka di tengah donut */}
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <p className="text-2xl font-semibold text-gray-800">{totalLulus}%</p>
-        <p className="text-xs text-gray-400">Total</p>
+        <p className="text-2xl font-bold text-gray-800">{totalLulus}%</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">Lulus</p>
       </div>
 
-      {/* Legenda warna manual (bukan bawaan recharts) supaya posisinya bisa diatur sendiri */}
-      <div className="flex items-center justify-center gap-4 mt-2 text-xs text-gray-500">
+      {/* Legenda */}
+      <div className="flex items-center justify-center gap-5 mt-3 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full" style={{ background: STATUS_COLORS[0] }} />
-          Lulus (60%)
+          <span
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ background: STATUS_COLORS[0] }}
+          />
+          <span>Lulus <span className="font-medium text-gray-700">{totalLulus}%</span></span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full" style={{ background: STATUS_COLORS[1] }} />
-          Revisi (40%)
+          <span
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ background: STATUS_COLORS[1] }}
+          />
+          <span>Revisi <span className="font-medium text-gray-700">{totalRevisi}%</span></span>
         </span>
       </div>
     </div>
@@ -88,29 +143,40 @@ export function StatusKualitasChart() {
 }
 
 // ============================================================
-// 3) AREA CHART - "Tren Inspeksi Mingguan"
+// 3) AREA CHART - "Tren Inspeksi"
+//    Menerima data sebagai prop agar bisa switch minggu/bulan
 // ============================================================
-export function TrenInspeksiChart() {
+export function TrenInspeksiChart({ data }) {
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <AreaChart data={trenInspeksi}>
+      <AreaChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
         <defs>
-          {/* "linearGradient" membuat efek warna memudar dari pekat (atas) ke transparan (bawah) */}
           <linearGradient id="colorTren" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#155e56" stopOpacity={0.35} />
+            <stop offset="5%" stopColor="#155e56" stopOpacity={0.25} />
             <stop offset="95%" stopColor="#155e56" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid vertical={false} stroke="#f0f0f0" />
-        <XAxis dataKey="hari" tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-        <Tooltip />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 11, fill: "#9ca3af" }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <YAxis
+          tick={{ fontSize: 11, fill: "#9ca3af" }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <Tooltip content={<CustomAreaTooltip />} />
         <Area
           type="monotone"
           dataKey="jumlah"
           stroke="#155e56"
           strokeWidth={2}
-          fill="url(#colorTren)" // pakai gradient yang didefinisikan di atas
+          fill="url(#colorTren)"
+          dot={{ fill: "#155e56", r: 3, strokeWidth: 0 }}
+          activeDot={{ r: 5, fill: "#155e56" }}
         />
       </AreaChart>
     </ResponsiveContainer>
